@@ -43,6 +43,66 @@ namespace PromoCodeFactory.WebHost.Controllers
             return employeesModelList;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddEmployeeAsync(UpdateEmployeeRequest employeeRequest)
+        {
+            Employee employee = new Employee
+            {
+                Id = Guid.NewGuid(),
+                Email = employeeRequest.Email,
+                AppliedPromocodesCount = employeeRequest.AppliedPromocodesCount,
+                FirstName = employeeRequest.FirstName,
+                LastName = employeeRequest.LastName
+            };
+
+            
+            await _employeeRepository.AddAsync(employee);
+
+
+            return Ok(employee);
+        }
+
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteEmployeeAsync(Guid guid)
+        {
+            try
+            {
+                await _employeeRepository.DeleteAsync(guid);
+            }
+            catch (InvalidOperationException e)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateEmployeeAsync(Guid id, UpdateEmployeeRequest employeeRequest)
+        {
+            Employee employee = new Employee
+            {
+                Id = id,
+                Email = employeeRequest.Email,
+                AppliedPromocodesCount = employeeRequest.AppliedPromocodesCount,
+                FirstName = employeeRequest.FirstName,
+                LastName = employeeRequest.LastName
+            };
+
+            try
+            {
+                await _employeeRepository.UpdateAsync(employee);
+            }
+            catch (InvalidOperationException e)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
         /// <summary>
         /// Получить данные сотрудника по Id
         /// </summary>

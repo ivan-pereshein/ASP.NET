@@ -14,8 +14,10 @@ namespace PromoCodeFactory.WebHost
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton(typeof(IRepository<Employee>), (x) => 
-                new InMemoryRepository<Employee>(FakeDataFactory.Employees));
+
+            services.AddSingleton(typeof(IRepository<Employee>), (x) =>
+                new EmployeeRepository(FakeDataFactory.Employees));
+
             services.AddSingleton(typeof(IRepository<Role>), (x) => 
                 new InMemoryRepository<Role>(FakeDataFactory.Roles));
 
