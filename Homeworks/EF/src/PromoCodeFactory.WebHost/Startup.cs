@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.Administration;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
+using PromoCodeFactory.DataAccess;
 using PromoCodeFactory.DataAccess.Data;
 using PromoCodeFactory.DataAccess.Repositories;
 
@@ -17,6 +19,7 @@ namespace PromoCodeFactory.WebHost
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
             services.AddScoped(typeof(IRepository<Employee>), (x) =>
                 new InMemoryRepository<Employee>(FakeDataFactory.Employees));
             services.AddScoped(typeof(IRepository<Role>), (x) =>
@@ -26,10 +29,19 @@ namespace PromoCodeFactory.WebHost
             services.AddScoped(typeof(IRepository<Customer>), (x) =>
                 new InMemoryRepository<Customer>(FakeDataFactory.Customers));
 
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IRepository<PromoCode>, EfRepository<PromoCode>>();
+
+
             services.AddOpenApiDocument(options =>
             {
                 options.Title = "PromoCode Factory API Doc";
                 options.Version = "1.0";
+            });
+
+            services.AddDbContext<EfContext>(optionsBuilder =>
+            {
+                optionsBuilder.UseSqlite("Data Source=C:/otus/ASP.NET/Homeworks/EF/src/PromoCodeFactory.DataAccess/homeworkEF.db");
             });
         }
 
